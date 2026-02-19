@@ -105,11 +105,12 @@ export function Booking(props: BookingProps) {
       if (b) {
         setBooking({
           ...b,
-          checkIn: new Date(b.checkIn),
-          checkOut: new Date(b.checkOut),
+          checkIn: new Date(`${b.checkIn}Z`),
+          checkOut: new Date(`${b.checkOut}Z`),
         });
         if (b.id) {
-          redirect(`/booking/${b.id}`);
+          console.info("Booking session started successfully, redirecting to booking details page with id %s", b.id);
+          window.location.href = `/booking/${b.id}`;
         }
       }
     } catch (error) {

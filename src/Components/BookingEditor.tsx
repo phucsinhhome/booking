@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Button, Datepicker, Label, Select } from "flowbite-react";
-import { addDays, formatISODateTime, formatLocaleDate } from "../Service/Utils";
+import { Link, useParams } from "react-router-dom";
+import { Avatar, Button, Datepicker, Label, Select } from "flowbite-react";
+import { addDays, formatISODateTime, formatISOHourMinute, formatLocaleDate, formatSimpleDateTime, formatVND } from "../Service/Utils";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { FaArrowAltCircleRight, FaCheck } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaBed, FaCheck, FaClock, FaMoneyBill } from "react-icons/fa";
 import CounterInput from "./CounterInput";
 import { filterBooking, getBooking, startBooking } from "../db/booking";
 import { Availability, Booking, BookingR, Pagination } from "./Booking";
@@ -53,8 +53,8 @@ export const BookingEditor = (props: BookingEditorProps) => {
       if (b) {
         setBooking({
           ...b,
-          checkIn: new Date(b.checkIn),
-          checkOut: new Date(b.checkOut),
+          checkIn: new Date(`${b.checkIn}Z`),
+          checkOut: new Date(`${b.checkOut}Z`),
         });
       }
     } catch (error) {
@@ -99,7 +99,14 @@ export const BookingEditor = (props: BookingEditorProps) => {
       };
       const rsp = await filterBooking(createdBookingId, filters);
       if (rsp.data) {
-        setAvailabilities(rsp.data.availabilities as Availability[]);
+        let availabilities = rsp.data.availabilities?.map((a: any)=>{
+          return {
+            ...a,
+            from: new Date(`${a.from}Z`),
+            to: new Date(`${a.to}Z`),
+          }
+        });
+        setAvailabilities(availabilities);
         setChoices(rsp.data.choices as Availability[]);
       }
     } catch (error) {
@@ -211,12 +218,41 @@ export const BookingEditor = (props: BookingEditorProps) => {
           let room = rooms.find((r) => r.id === a.roomId);
           return room ? (
             <div
-              key={a.id}
-              className="flex flex-row items-center justify-between rounded-lg bg-white p-4 shadow"
-            >
-              <div>
-                <h3 className="text-lg font-semibold">{room?.name}</h3>
-              </div>
+                className="relative flex flex-row items-center rounded-md border border-gray-300 bg-white shadow-2xl dark:bg-slate-500"
+                key={a.id}
+              >
+                <div className="py-2 pl-0.5 pr-1">
+                  <Avatar
+                    img={'/logo192.jpg'}
+                    alt="dish image"
+                    rounded
+                    className="w-12"
+                  />
+                </div>
+                <div
+                  className={"w-full px-0"}
+                >
+                  <div className="grid grid-cols-1">
+                    <div className="flex flex-row">
+                      <Link
+                        to=""
+                        className="overflow-hidden font-medium text-green-800 hover:underline dark:text-gray-200"
+                      >
+                        {room.name}
+                      </Link>
+                    </div>
+                    <div className="flex flex-row space-x-2 text-sm">
+                      <div className="flex items-center space-x-0.5">
+                        <FaMoneyBill size="1em" className="text-yellow-700" />
+                        <span>{formatVND(a.price) ?? "N/A"}</span>
+                      </div>
+                      <div className="flex items-center space-x-0.5">
+                        <FaClock size="1em" className="text-yellow-700" />
+                        <span>{`${formatSimpleDateTime(a.from)}-${formatSimpleDateTime(a.to)}`}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
           ) : (
             <></>

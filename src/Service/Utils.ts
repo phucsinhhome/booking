@@ -56,6 +56,11 @@ export const beginOfMonth = (date: Date) => {
     return date
 }
 
+export const formatSimpleDateTime = (date: Date) => {
+    // Format: 19.02 14:30
+    return `${date.getDate()}.${date.getMonth() + 1} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
+}
+
 export const formatShortDate = (date: Date) => {
     // Format: Jul 30, 2024
     return date.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })
