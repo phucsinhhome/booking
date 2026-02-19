@@ -68,7 +68,7 @@ const defaultBooking: Booking = {
   guestPhotos: [],
 };
 
-const hours = Array.from(Array(24).keys()).map((h) => ({
+export const hours = Array.from(Array(24).keys()).map((h) => ({
   label: `${h}:00`,
   value: h,
 }));

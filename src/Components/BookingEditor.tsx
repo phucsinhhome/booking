@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Avatar, Button, Datepicker, Label, Select } from "flowbite-react";
+import { Avatar, Button, Datepicker, Label, Modal, Select, TextInput } from "flowbite-react";
 import { addDays, formatISODateTime, formatISOHourMinute, formatLocaleDate, formatSimpleDateTime, formatVND } from "../Service/Utils";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { FaArrowAltCircleRight, FaBed, FaCheck, FaClock, FaMoneyBill } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaBed, FaCheck, FaClock, FaFilter, FaMoneyBill, FaXbox } from "react-icons/fa";
 import CounterInput from "./CounterInput";
 import { filterBooking, getBooking, startBooking } from "../db/booking";
-import { Availability, Booking, BookingR, Pagination } from "./Booking";
+import { Availability, Booking, BookingR, hours, Pagination } from "./Booking";
 import { listRoom } from "../db/room";
 
 export type Room = {
@@ -40,6 +40,8 @@ export const BookingEditor = (props: BookingEditorProps) => {
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const { bookingId } = useParams();
+
+  const [openFilter, setOpenFilter] = useState(false);
 
   const fetchBooking = async () => {
     try {
@@ -211,9 +213,22 @@ export const BookingEditor = (props: BookingEditorProps) => {
     });
   };
 
+  const cancelFilter = () => {
+    setOpenFilter(false);
+  };
+
+  const applyFilter = () => {
+    if (!booking || !booking.id) {
+      console.warn("No booking details available, skip handling apply filter.");
+      return;
+    }
+    fetchAvailabilities(booking.id);
+    setOpenFilter(false);
+  };
+
   return (
     <>
-      <div className="w-full space-y-2">
+      <div className="flex-1 flex-col w-full space-y-2 overflow-y-auto">
         {availabilities?.map((a) => {
           let room = rooms.find((r) => r.id === a.roomId);
           return room ? (
@@ -260,11 +275,109 @@ export const BookingEditor = (props: BookingEditorProps) => {
         })}
       </div>
       <div className="absolute bottom-1 left-1/2 flex w-11/12 -translate-x-1/2 flex-row items-center justify-center space-x-2 rounded-3xl bg-slate-300 opacity-70 shadow-sm">
+        <Button size="xs" color="green" onClick={() => setOpenFilter(true)}>
+          <FaFilter size="1.5em" className="mr-2"  />
+          Filter
+        </Button>
         <Button size="xs" color="green">
           <FaArrowAltCircleRight size="1.5em" className="mr-2" />
           Next
         </Button>
       </div>
+      <Modal
+        show={openFilter}
+        size="md"
+        popup={true}
+        onClose={cancelFilter}
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="h-full w-full space-y-2 pb-2 sm:pb-6 lg:px-8 xl:pb-8">
+            <div className="flex w-full flex-col align-middle">
+          <div className="flex w-3/5 items-center">
+            <Label htmlFor="checkIn" value="Check In" />
+          </div>
+
+          <div className="flex w-full flex-row">
+            <Datepicker
+              id="checkIn"
+              required={true}
+              type="date"
+              value={booking ? formatLocaleDate(booking.checkIn) : ""}
+              onSelectedDateChanged={(date) =>
+                handleDateChange(date, "checkIn")
+              }
+            />
+            <Select
+              id="checkIn"
+              required={true}
+              className="ml-2"
+              value={booking?.checkIn.getHours()}
+              onChange={handleSelectChange}
+            >
+              {hours.map((h) => (
+                <option key={h.value} value={h.value}>
+                  {h.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+        <div className="flex w-full flex-col align-middle">
+          <div className="flex w-3/5 items-center">
+            <Label htmlFor="checkOut" value="Check Out" />
+          </div>
+
+          <div className="flex w-full flex-row">
+            <Datepicker
+              id="checkOut"
+              required={true}
+              type="date"
+              value={booking ? formatLocaleDate(booking.checkOut) : ""}
+              onSelectedDateChanged={(date) =>
+                handleDateChange(date, "checkOut")
+              }
+            />
+            <Select
+              id="checkOut"
+              required={true}
+              className="ml-2"
+              value={booking?.checkOut.getHours()}
+              onChange={handleSelectChange}
+            >
+              {hours.map((h) => (
+                <option key={h.value} value={h.value}>
+                  {h.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+        <div className="flex w-full flex-col align-middle">
+          <div className="flex w-3/5 items-center">
+            <Label htmlFor="numOfAdult" value="Number of Adults" />
+          </div>
+          <CounterInput<Booking>
+            name="numOfAdult"
+            value={booking?.numOfAdult || 0}
+            onChange={changeCounter}
+            min={1}
+            step={1}
+          />
+        </div>
+            </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center">
+          <Button onClick={cancelFilter} color="gray" size="sm">
+            <FaXbox size="1.5em" className="mr-2" />
+            Cancel
+          </Button>
+          <Button onClick={applyFilter} color="green" size="sm">
+            <FaCheck size="1.5em" className="mr-2" />
+            Apply
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
