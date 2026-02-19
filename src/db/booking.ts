@@ -1,11 +1,12 @@
 import { Booking } from "../Components/Booking";
+import { formatISODateTime } from "../Service/Utils";
 import { receptionApi } from "./apis";
 
 
 export const startBooking = (checkIn: Date, checkOut: Date, numOfAdult: number, numOfChild: number) => {
   console.info("Start booking");
   return receptionApi.get(
-    `/booking/start?checkIn=${checkIn.toISOString()}&checkOut=${checkOut.toISOString()}&numOfAdult=${numOfAdult}&numOfChild=${numOfChild}`
+    `/booking/start?checkIn=${formatISODateTime(checkIn)}&checkOut=${formatISODateTime(checkOut)}&numOfAdult=${numOfAdult}&numOfChild=${numOfChild}`
   );
 }
 
