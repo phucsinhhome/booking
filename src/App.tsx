@@ -3,8 +3,9 @@ import "./App.css";
 import { Booking } from "./Components/Booking";
 import { Welcome } from "./Components/Welcome";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
-import { FaHome, FaCalendarAlt } from "react-icons/fa";
+import { FaHome, FaCalendarAlt, FaArrowCircleLeft } from "react-icons/fa";
 import { BookingEditor } from "./Components/BookingEditor";
+import { Button } from "flowbite-react";
 
 export const DEFAULT_PAGE_SIZE =
   Number(process.env.REACT_APP_DEFAULT_PAGE_SIZE) || 10;
@@ -71,18 +72,19 @@ export const App = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center space-x-2 pl-2">
-            <button
-              className="mr-2 rounded border border-green-700 bg-green-100 px-2 py-1 text-green-900 hover:bg-green-200"
+          <div className="flex items-center">
+            <Button
               onClick={() => {
                 setActiveMenu(menus.home);
                 navigate("/home");
               }}
-              type="button"
+              size="xs"
+              color="green"
+              className="items-center"
             >
-              &larr; Back
-            </button>
-            <span className="text-2xl font-semibold text-green-900">
+              <FaArrowCircleLeft className="mr-1" /> Back
+            </Button>
+            <span className="text-sm font-semibold text-green-900">
               {activeMenu.title}
             </span>
           </div>

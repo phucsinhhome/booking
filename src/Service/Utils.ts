@@ -83,7 +83,6 @@ export const formatISODateTime = (date: Date) => {
 }
 
 export const formatLocaleDate = (date: Date) => {
-    console.log(date)
     if (isNaN(date.getTime())) {
         console.log("not valid date")
     }

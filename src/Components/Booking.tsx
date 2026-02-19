@@ -15,6 +15,9 @@ export type BookingR = {
   id: string | null;
   code: string | null;
   guestName: string | null;
+  phoneNumber?: string;
+  email?: string;
+  note?: string;
   country: string;
   channel: string;
   numOfAdult: number;
@@ -31,6 +34,9 @@ export type Booking = {
   id: string | null;
   code: string | null;
   guestName: string | null;
+  phoneNumber?: string,
+  email?: string,
+  note?: string;
   country: string;
   channel: string;
   numOfAdult: number;
@@ -56,6 +62,9 @@ const defaultBooking: Booking = {
   id: null,
   code: null,
   guestName: null,
+  phoneNumber: "",
+  email: "",
+  note: "",
   country: "VN",
   channel: "PSBOOKING",
   numOfAdult: 2,

@@ -33,3 +33,11 @@ export const getBooking = async (bookingId: string) => {
     `/booking/${bookingId}`
   );
 }
+
+export const confirmBooking = (bookingId: string, filters: any) => {
+  console.info("Confirm booking with id %s and filters %s", bookingId, filters);
+  return receptionApi.post(
+    `/booking/${bookingId}/confirm`,
+    filters
+  );
+}
