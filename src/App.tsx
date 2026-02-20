@@ -6,6 +6,7 @@ import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { FaHome, FaCalendarAlt, FaArrowCircleLeft } from "react-icons/fa";
 import { BookingEditor } from "./Components/BookingEditor";
 import { Button } from "flowbite-react";
+import { Reservation } from "./Components/Reservation";
 
 export const DEFAULT_PAGE_SIZE =
   Number(process.env.REACT_APP_DEFAULT_PAGE_SIZE) || 10;
@@ -27,6 +28,12 @@ const menus = {
     path: "availability",
     displayName: "Availability",
     title: "Availability",
+    icon: <FaCalendarAlt size={28} />,
+  },
+  reservation: {
+    path: "reservation",
+    displayName: "Reservation",
+    title: "Reservation",
     icon: <FaCalendarAlt size={28} />,
   },
 };
@@ -108,6 +115,12 @@ export const App = () => {
           path="booking/:bookingId"
           element={
             <BookingEditor activeMenu={() => setActiveMenu(menus.availability)} />
+          }
+        />
+        <Route
+          path="reservation/:reservationId"
+          element={
+            <Reservation activeMenu={() => setActiveMenu(menus.availability)} />
           }
         />
       </Routes>

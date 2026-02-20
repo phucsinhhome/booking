@@ -15,7 +15,7 @@ export type BookingR = {
   id: string | null;
   code: string | null;
   guestName: string | null;
-  phoneNumber?: string;
+  phone?: string;
   email?: string;
   note?: string;
   country: string;
@@ -34,7 +34,7 @@ export type Booking = {
   id: string | null;
   code: string | null;
   guestName: string | null;
-  phoneNumber?: string,
+  phone?: string,
   email?: string,
   note?: string;
   country: string;
@@ -62,7 +62,7 @@ const defaultBooking: Booking = {
   id: null,
   code: null,
   guestName: null,
-  phoneNumber: "",
+  phone: "",
   email: "",
   note: "",
   country: "VN",

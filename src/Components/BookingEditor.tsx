@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Avatar,
   Button,
@@ -33,7 +33,7 @@ import {
   FaXbox,
 } from "react-icons/fa";
 import CounterInput from "./CounterInput";
-import { filterBooking, getBooking, startBooking } from "../db/booking";
+import { confirmBooking, filterBooking, getBooking, startBooking } from "../db/booking";
 import { Availability, Booking, BookingR, hours, Pagination } from "./Booking";
 import { listRoom } from "../db/room";
 
@@ -71,6 +71,7 @@ export const BookingEditor = (props: BookingEditorProps) => {
 
   const [openFilter, setOpenFilter] = useState(false);
   const [openGuestInfo, setOpenGuestInfo] = useState(false);
+  const navigate = useNavigate();
 
   const fetchBooking = async () => {
     try {
@@ -282,6 +283,30 @@ export const BookingEditor = (props: BookingEditorProps) => {
     setOpenGuestInfo(false);
   };
 
+  const confirmBookingDetails = async () => {
+    if (!booking || !booking.id) {
+      console.warn("No booking details available, skip confirming booking.");
+      return;
+    }
+    try {
+      const rsp = await confirmBooking(booking.id, booking);
+      const b = rsp.data as BookingR;
+      if (b) {
+        setBooking({
+          ...b,
+          checkIn: new Date(`${b.checkIn}Z`),
+          checkOut: new Date(`${b.checkOut}Z`),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to confirm booking: ", error);
+    }
+    finally {
+      closeGuestInfo();
+      navigate(`/reservation/${booking.id}`);
+    }
+  };
+
   return (
     <>
       <div className="flex w-full flex-col space-y-0.5 border-rose-100 bg-rose-50 px-2">
@@ -407,7 +432,7 @@ export const BookingEditor = (props: BookingEditorProps) => {
           <FaFilter size="1.5em" className="mr-2" />
           Filter
         </Button>
-        <Button size="xs" color="green">
+        <Button size="xs" color="green" onClick={() => setOpenGuestInfo(true)}>
           <FaArrowAltCircleRight size="1.5em" className="mr-2" />
           Next
         </Button>
@@ -522,16 +547,16 @@ export const BookingEditor = (props: BookingEditorProps) => {
             </div>
             <div className="flex w-full flex-col align-middle">
               <div className="flex w-3/5 items-center">
-                <Label htmlFor="phoneNumber" value="Phone Number" />
+                <Label htmlFor="phone" value="Phone Number" />
               </div>
               <TextInput
-                id="phoneNumber"
+                id="phone"
                 placeholder="+84 123 456 789"
                 required={true}
-                value={booking?.phoneNumber || ""}
+                value={booking?.phone || ""}
                 onChange={handleTextChange}
                 className="w-full"
-                rightIcon={() => <FaTrash onClick={() => emptyTextInput("phoneNumber")} />}
+                rightIcon={() => <FaTrash onClick={() => emptyTextInput("phone")} />}
               />
             </div>
             <div className="flex w-full flex-col align-middle">
@@ -564,13 +589,13 @@ export const BookingEditor = (props: BookingEditorProps) => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center">
-          <Button onClick={cancelFilter} color="gray" size="sm">
+          <Button onClick={closeGuestInfo} color="gray" size="sm">
             <FaXbox size="1.5em" className="mr-2" />
             Cancel
           </Button>
-          <Button onClick={applyFilter} color="green" size="sm">
+          <Button onClick={confirmBookingDetails} color="green" size="sm" >
             <FaCheck size="1.5em" className="mr-2" />
-            Apply
+            Confirm
           </Button>
         </Modal.Footer>
       </Modal>
