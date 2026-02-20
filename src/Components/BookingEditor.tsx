@@ -289,7 +289,15 @@ export const BookingEditor = (props: BookingEditorProps) => {
       return;
     }
     try {
-      const rsp = await confirmBooking(booking.id, booking);
+      let submittedBooking = {
+        ...booking,
+        choices: choices,
+      };
+      const rsp = await confirmBooking(booking.id, submittedBooking);
+      if (rsp.status !== 200) {
+        console.error("Failed to confirm booking with status %s and message %s", rsp.status, rsp.statusText);
+        return;
+      }
       const b = rsp.data as BookingR;
       if (b) {
         setBooking({
@@ -298,12 +306,12 @@ export const BookingEditor = (props: BookingEditorProps) => {
           checkOut: new Date(`${b.checkOut}Z`),
         });
       }
+      navigate(`/reservation/${booking.id}`);
     } catch (error) {
       console.error("Failed to confirm booking: ", error);
     }
     finally {
       closeGuestInfo();
-      navigate(`/reservation/${booking.id}`);
     }
   };
 
