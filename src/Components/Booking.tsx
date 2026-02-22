@@ -12,6 +12,7 @@ import { startBooking } from "../db/booking";
 import { redirect } from "react-router-dom";
 
 export type BookingR = {
+  tenantId: string;
   id: string | null;
   code: string | null;
   guestName: string | null;
@@ -31,6 +32,7 @@ export type BookingR = {
 };
 
 export type Booking = {
+  tenantId?: string;
   id: string | null;
   code: string | null;
   guestName: string | null;
@@ -59,6 +61,7 @@ export type Availability = {
 };
 
 const defaultBooking: Booking = {
+  tenantId: undefined,
   id: null,
   code: null,
   guestName: null,

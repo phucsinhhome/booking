@@ -10,6 +10,7 @@ import { ResRoom } from "./Booking";
 import { getReservation } from "../db/reservation";
 
 export type ReservationR = {
+  tenantId: string;
   id?: string;
   code: string;
   guestName: string | null;
@@ -28,6 +29,7 @@ export type ReservationR = {
 };
 
 export type Reservation = {
+  tenantId?: string;
   id?: string;
   code: string;
   guestName: string | null;
@@ -46,6 +48,7 @@ export type Reservation = {
 };
 
 const defaultReservation: Reservation = {
+  tenantId: undefined,
   id: undefined,
   code: '',
   guestName: null,
